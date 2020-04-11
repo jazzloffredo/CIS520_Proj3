@@ -50,11 +50,13 @@ page_for_addr (const void *address)
       if (e != NULL)
         return hash_entry (e, struct page, hash_elem);
 
-      /* No page.  Expand stack? */
-
-/* add code */
-
+      /* No page.  Expand stack! */
+      if (p.addr > PHYS_BASE - STACK_MAX && thread_current ()->user_esp - 32 < address)
+      {
+        return page_allocate (p.addr, false);
+      }
     }
+
   return NULL;
 }
 
@@ -145,11 +147,11 @@ page_out (struct page *p)
      dirty bit, to prevent a race with the process dirtying the
      page. */
 
-/* add code here */
+  pagedir_clear_page (p->thread->pagedir, p->addr);
 
-  /* Has the frame been modified? */
+  /* Has the frame been modified? Check if page is dirty. */
 
-/* add code here */
+  dirty = pagedir_is_dirty (p->thread->pagedir, p->addr);
 
   /* Write frame contents to disk if necessary. */
 
