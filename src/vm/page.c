@@ -156,7 +156,29 @@ page_out (struct page *p)
   /* Write frame contents to disk if necessary. */
 
 /* add code here */
-
+/* Inspired by https://github.com/ChristianJHughes/pintos-project3/blob/master/pintos3/src/vm/page.c*/
+  /* If the page is not dirty it is currently ok*/
+  if(!dirty) {
+    ok = true;
+  }
+  /* If the current page's file is null, we need to set ok to whatever is returned from swap_out*/
+  if(p->file == NULL) {
+    ok = swap_out(p);
+  }
+  else {
+    if(dirty) {
+      if(p->private) {
+        ok = swap_out(p);
+      }
+      else {
+        ok = file_write_at(p->file, p->frame->base, p->file_bytes, p->file_offset);
+      }
+    }
+  }
+  /* If the current page is ok'd, we need to set its frame to null */ 
+  if(ok) {
+    p->frame = NULL;
+  }
   return ok;
 }
 

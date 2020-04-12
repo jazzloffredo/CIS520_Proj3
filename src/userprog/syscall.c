@@ -90,6 +90,7 @@ syscall_handler (struct intr_frame *f)
 
   /* Get the system call arguments. */
   ASSERT (sc->arg_cnt <= sizeof args / sizeof *args);
+
   memset (args, 0, sizeof args);
   copy_in (args, (uint32_t *) f->esp + 1, sizeof *args * sc->arg_cnt);
 
@@ -197,7 +198,10 @@ sys_exec (const char *ufile)
   lock_release (&fs_lock);
  
   palloc_free_page (kfile);
- 
+  /*If it did not load correctly (fixing exec-missing test) */
+  if(tid == TID_ERROR) {
+    return -1;
+  }
   return tid;
 }
  
