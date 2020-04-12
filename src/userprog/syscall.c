@@ -198,10 +198,7 @@ sys_exec (const char *ufile)
   lock_release (&fs_lock);
  
   palloc_free_page (kfile);
-  /*If it did not load correctly (fixing exec-missing test) */
-  if(tid == TID_ERROR) {
-    return -1;
-  }
+
   return tid;
 }
  
